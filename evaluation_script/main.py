@@ -79,10 +79,12 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     test_data_df = pd.DataFrame({'id':test_data.keys(),
                              'generation':test_data.values()})
     test_data_df['id'] = test_data_df['id'].apply(int)
+    print('Test Data Loaded')
     merged = pd.merge(ground_truth_data, test_data_df, on=['id'])
-    chn = merged['language']=='chinese'
-    merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
-    merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
+    # chn = merged['language']=='chinese'
+    # merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
+    # merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
+    print('Data Merged')
     
     bleu_score = metrics['bleu'].compute(predictions=merged['generation'],references=merged['utterance'])
     meteor_score = metrics['meteor'].compute(predictions=merged['generation'],references=merged['utterance'])
