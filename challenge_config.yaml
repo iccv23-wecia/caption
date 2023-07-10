@@ -20,7 +20,7 @@ leaderboard:
     schema:
       {
         "labels": ["BLEU", "METEOR", "ROUGE1", "ROUGE2","ROUGEL"],
-        "default_order_by": "Total",
+        "default_order_by": "BLEU",
         "metadata": {
           "Metric1": {
             "sort_ascending": True,
