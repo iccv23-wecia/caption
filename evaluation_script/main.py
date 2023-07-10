@@ -1,6 +1,19 @@
 import random
 import json
 import evaluate as hfeval
+from cider import Cider
+import pandas as pd
+import jieba
+
+def dataframes_to_coco_eval_format(references, hypothesis):
+    references = {i: [k for k in x] for i, x in enumerate(references)}
+    hypothesis = {i: [x] for i, x in enumerate(hypothesis)}
+    return references, hypothesis
+
+def add_space(cap):
+    cap = jieba.cut(cap, use_paddle=True)
+    cap = ' '.join(list(cap))
+    return cap
 
 def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwargs):
     print("Starting Evaluation.....")
@@ -43,34 +56,41 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
 
     metrics_list = ['bleu','meteor','rouge']
     metrics = {m:hfeval.load(m) for m in metrics_list}
+    cider_metric = Cider()
 
 
     with open(user_submission_file, "r") as test_file_object:
         test_data = json.load(test_file_object)
-    with open(test_annotation_file, "r") as ground_truth_file_object:
-        ground_truth_data = json.load(ground_truth_file_object)
+    # with open(test_annotation_file, "r") as ground_truth_file_object:
+    #     ground_truth_data = json.load(ground_truth_file_object)
+    ground_truth_data = pd.read_csv('cap_gen_solution.csv')
 
-    test_dict = {item: test_data[item][0] for item in test_data}
-    ground_truth_dict = {item: test_data[item][0] for item in ground_truth_data}
+    # test_dict = {item: test_data[item][0] for item in test_data}
+    # ground_truth_dict = {item: test_data[item][0] for item in ground_truth_data}
     
-    gts, preds = [], []
-    for key in ground_truth_dict.keys():
-        gts.append(ground_truth_dict[key])
-        if key in test_dict:
-            preds.append(test_dict[key])
-        else:
-            preds.append('')
-    
-    bleu_score = metrics['bleu'].compute(predictions=preds,references=gts)
-    meteor_score = metrics['meteor'].compute(predictions=preds,references=gts)
-    rouge_score = metrics['rouge'].compute(predictions=preds,references=gts)
+    # gts, preds = [], []
+    # for key in ground_truth_dict.keys():
+    #     gts.append(ground_truth_dict[key])
+    #     if key in test_dict:
+    #         preds.append(test_dict[key])
+    #     else:
+    #         preds.append('')
 
-    # for id, test_emotion in test_dict.items():
-    #     ground_truth_emotion = ground_truth_dict.get(id)
-    #     if ground_truth_emotion is not None:
-    #         bleu_score = metrics['bleu'].compute(predictions=test_emotion,references=ground_truth_emotion)
-    #         meteor_score = metrics['meteor'].compute(predictions=test_emotion,references=ground_truth_emotion)
-    #         rouge_score = metrics['rouge'].compute(predictions=test_emotion,references=ground_truth_emotion)
+    test_data_df = pd.DataFrame({'id':test_data.keys(),
+                             'generation':test_data.values()})
+    test_data_df['id'] = test_data_df['id'].apply(int)
+    merged = pd.merge(ground_truth_data, test_data_df, on=['id'])
+    chn = merged['language']=='chinese'
+    merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
+    merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
+    
+    bleu_score = metrics['bleu'].compute(predictions=merged['generation'],references=merged['utterance'])
+    meteor_score = metrics['meteor'].compute(predictions=merged['generation'],references=merged['utterance'])
+    rouge_score = metrics['rouge'].compute(predictions=merged['generation'],references=merged['utterance'], tokenizer=lambda x: x.split())
+
+    gts, preds = dataframes_to_coco_eval_format(merged['utterance'], merged['generation'])
+    _, all_scores = cider_metric.compute_score(gts, preds)
+    cider_score = pd.Series(all_scores).describe()['mean'].item()
 
     output = {}
     if phase_codename == "dev":
@@ -83,6 +103,7 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
                     "ROUGE1": rouge_score['rouge1'],
                     "ROUGE2": rouge_score['rouge2'],
                     "ROUGEL": rouge_score['rougeL'],
+                    "CIDEr": cider_score,
                 }
             }
         ]
@@ -99,6 +120,7 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
                     "ROUGE1": rouge_score['rouge1'],
                     "ROUGE2": rouge_score['rouge2'],
                     "ROUGEL": rouge_score['rougeL'],
+                    "CIDEr": cider_score,
                 }
             },
             {
@@ -107,7 +129,8 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
                     "METEOR": meteor_score['meteor'],
                     "ROUGE1": rouge_score['rouge1'],
                     "ROUGE2": rouge_score['rouge2'],
-                    "ROUGEL": rouge_score['rougeL'],                    
+                    "ROUGEL": rouge_score['rougeL'],
+                    "CIDEr": cider_score,                    
                 }
             },
         ]
