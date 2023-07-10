@@ -1,7 +1,7 @@
 import random
 import json
 import evaluate as hfeval
-from cider import Cider
+from .cider import Cider
 import pandas as pd
 import jieba
 
