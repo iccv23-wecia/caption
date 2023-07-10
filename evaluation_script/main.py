@@ -2,8 +2,6 @@ import random
 import json
 import evaluate as hfeval
 
-
-
 def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwargs):
     print("Starting Evaluation.....")
     """
@@ -42,16 +40,49 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
             'submitted_at': u'2017-03-20T19:22:03.880652Z'
         }
     """
+
+    metrics_list = ['bleu','meteor','rouge']
+    metrics = {m:hfeval.load(m) for m in metrics_list}
+
+
+    with open(user_submission_file, "r") as test_file_object:
+        test_data = json.load(test_file_object)
+    with open(test_annotation_file, "r") as ground_truth_file_object:
+        ground_truth_data = json.load(ground_truth_file_object)
+
+    test_dict = {item: test_data[item][0] for item in test_data}
+    ground_truth_dict = {item: test_data[item][0] for item in ground_truth_data}
+    
+    gts, preds = [], []
+    for key in ground_truth_dict.keys():
+        gts.append(ground_truth_dict[key])
+        if key in test_dict:
+            preds.append(test_dict[key])
+        else:
+            preds.append('')
+    
+    bleu_score = metrics['bleu'].compute(predictions=preds,references=gts)
+    meteor_score = metrics['meteor'].compute(predictions=preds,references=gts)
+    rouge_score = metrics['rouge'].compute(predictions=preds,references=gts)
+
+    # for id, test_emotion in test_dict.items():
+    #     ground_truth_emotion = ground_truth_dict.get(id)
+    #     if ground_truth_emotion is not None:
+    #         bleu_score = metrics['bleu'].compute(predictions=test_emotion,references=ground_truth_emotion)
+    #         meteor_score = metrics['meteor'].compute(predictions=test_emotion,references=ground_truth_emotion)
+    #         rouge_score = metrics['rouge'].compute(predictions=test_emotion,references=ground_truth_emotion)
+
     output = {}
     if phase_codename == "dev":
         print("Evaluating for Dev Phase")
         output["result"] = [
             {
                 "train_split": {
-                    "Metric1": random.randint(0, 99),
-                    "Metric2": random.randint(0, 99),
-                    "Metric3": random.randint(0, 99),
-                    "Total": random.randint(0, 99),
+                    "BLEU": bleu_score['bleu'],
+                    "METEOR": meteor_score['meteor'],
+                    "ROUGE1": rouge_score['rouge1'],
+                    "ROUGE2": rouge_score['rouge2'],
+                    "ROUGEL": rouge_score['rougeL'],
                 }
             }
         ]
@@ -63,18 +94,20 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
         output["result"] = [
             {
                 "train_split": {
-                    "Metric1": random.randint(0, 99),
-                    "Metric2": random.randint(0, 99),
-                    "Metric3": random.randint(0, 99),
-                    "Total": random.randint(0, 99),
+                    "BLEU": bleu_score['bleu'],
+                    "METEOR": meteor_score['meteor'],
+                    "ROUGE1": rouge_score['rouge1'],
+                    "ROUGE2": rouge_score['rouge2'],
+                    "ROUGEL": rouge_score['rougeL'],
                 }
             },
             {
                 "test_split": {
-                    "Metric1": random.randint(0, 99),
-                    "Metric2": random.randint(0, 99),
-                    "Metric3": random.randint(0, 99),
-                    "Total": random.randint(0, 99),
+                    "BLEU": bleu_score['bleu'],
+                    "METEOR": meteor_score['meteor'],
+                    "ROUGE1": rouge_score['rouge1'],
+                    "ROUGE2": rouge_score['rouge2'],
+                    "ROUGEL": rouge_score['rougeL'],                    
                 }
             },
         ]
@@ -82,3 +115,4 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
         output["submission_result"] = output["result"][0]
         print("Completed evaluation for Test Phase")
     return output
+
