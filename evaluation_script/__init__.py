@@ -33,6 +33,7 @@ def install_local_package(folder_name):
 )
 
 install("evaluate")
+install("nltk")
 # install("requests==2.25.1")
 
 # install_local_package("package_folder_name")
