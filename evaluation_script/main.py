@@ -63,7 +63,7 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
         test_data = json.load(test_file_object)
     # with open(test_annotation_file, "r") as ground_truth_file_object:
     #     ground_truth_data = json.load(ground_truth_file_object)
-    ground_truth_data = pd.read_csv('cap_gen_solution.csv')
+    ground_truth_data = pd.read_csv(test_annotation_file)
 
     # test_dict = {item: test_data[item][0] for item in test_data}
     # ground_truth_dict = {item: test_data[item][0] for item in ground_truth_data}
@@ -81,11 +81,11 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     test_data_df['id'] = test_data_df['id'].apply(int)
     print('Test Data Loaded')
     merged = pd.merge(ground_truth_data, test_data_df, on=['id'])
-    # chn = merged['language']=='chinese'
-    # merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
-    # merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
     print('Data Merged')
-    
+    chn = merged['language']=='chinese'
+    merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
+    merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
+    print('jieba done')
     bleu_score = metrics['bleu'].compute(predictions=merged['generation'],references=merged['utterance'])
     meteor_score = metrics['meteor'].compute(predictions=merged['generation'],references=merged['utterance'])
     rouge_score = metrics['rouge'].compute(predictions=merged['generation'],references=merged['utterance'], tokenizer=lambda x: x.split())
