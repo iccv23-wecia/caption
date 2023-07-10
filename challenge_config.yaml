@@ -19,7 +19,7 @@ leaderboard:
   - id: 1
     schema:
       {
-        "labels": ["Metric1", "Metric2", "Metric3", "Total"],
+        "labels": ["BLEU", "METEOR", "ROUGE1", "ROUGE2","ROUGEL"],
         "default_order_by": "Total",
         "metadata": {
           "Metric1": {
