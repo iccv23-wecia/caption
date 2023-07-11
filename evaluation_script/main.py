@@ -88,11 +88,11 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     print('jieba done')
     bleu_score = metrics['bleu'].compute(predictions=merged['generation'],references=merged['utterance'])
     print('bleu_score done')
-    # meteor_score = metrics['meteor'].compute(predictions=merged['generation'],references=merged['utterance'])
-    meteor_score = {'meteor':0}
+    meteor_score = metrics['meteor'].compute(predictions=merged['generation'],references=merged['utterance'])
+    # meteor_score = {'meteor':0}
     print('meteor_score done')
-    # rouge_score = metrics['rouge'].compute(predictions=merged['generation'],references=merged['utterance'], tokenizer=lambda x: x.split())
-    rouge_score = {'rouge1':0,'rouge2':0,'rougeL':0}
+    rouge_score = metrics['rouge'].compute(predictions=merged['generation'],references=merged['utterance'], tokenizer=lambda x: x.split())
+    # rouge_score = {'rouge1':0,'rouge2':0,'rougeL':0}
     print('rouge_score done')
     gts, preds = dataframes_to_coco_eval_format(merged['utterance'], merged['generation'])
     print('Going for cider')
