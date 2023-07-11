@@ -1,0 +1,7 @@
+id,art_style,painting,language,emotion,utterance
+0,Expressionism,lovis-corinth_the-blinded-samson-1912,english,amusement,['Looks like a naked prisoner wearing an adult diaper. Kind of humorous except for the blood on his face']
+1,Post_Impressionism,vincent-van-gogh_garden-with-flowers-1888(1),english,sadness,['The lack of color or people in this image is uncomfortable.']
+2,Impressionism,theophrastos-triantafyllidis_vase-with-flowers,arabic,contentment,"['اناء من الزجاج فيه زهور بيضاء و برتقاليه و نباتات خضراء', 'فازة من الزهور متنوعة الألوان موضوعة على طاولة']"
+3,Realism,gustave-courbet_still-life,chinese,anger,['剥开的石榴只吃了一点点就放在了桌子上，浪费食物的行为让人觉得生气。']
+4,Expressionism,tivadar-kosztka-csontvary_trees-in-electric-light-at-jajce-1903,arabic,contentment,"['\u200fرجلي يمتطي حمار ويقف بجانبه رجل اخر ينظرون إلى مجموعة من الناس يجلسون تحت شجرة', 'منزل اعلى تل محيط بمجرى ماء به سفينه تحمل ركاب ورجل وابنته اعلى الحصان', 'عماويد الانارة مضيئة ظلمة الشارع وتركب فتاة حمارها وقد بنيت منازلهم فوق هضبة عالية', 'امرأة علي حمار وبجانبها رجل في حديقة مليئة بالخضرة ومحاطة بالأشجار']"
+5,Expressionism,charles-demuth_plums-1925,arabic,contentment,['مجموعة من أزهار حمراء متفتحة تظهر فى صورة رائعة']
