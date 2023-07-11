@@ -96,8 +96,9 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     print('rouge_score done')
     gts, preds = dataframes_to_coco_eval_format(merged['utterance'], merged['generation'])
     print('Going for cider')
-    _, all_scores = cider_metric.compute_score(gts, preds)
-    cider_score = pd.Series(all_scores).describe()['mean'].item()
+    # _, all_scores = cider_metric.compute_score(gts, preds)
+    # cider_score = pd.Series(all_scores).describe()['mean'].item()
+    cider_score = 0
     print('cider done')
 
     output = {}
