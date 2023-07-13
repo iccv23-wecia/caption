@@ -19,8 +19,8 @@ leaderboard:
   - id: 1
     schema:
       {
-        "labels": ["BLEU", "METEOR", "ROUGE1", "ROUGE2","ROUGEL"],
-        "default_order_by": "BLEU",
+        "labels": ["BLEU", "METEOR", "ROUGE1", "ROUGE2","ROUGEL","CIDEr"],
+        "default_order_by": "CIDEr",
         "metadata": {
           "Metric1": {
             "sort_ascending": True,
