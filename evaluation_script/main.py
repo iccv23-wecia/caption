@@ -64,6 +64,7 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     # with open(test_annotation_file, "r") as ground_truth_file_object:
     #     ground_truth_data = json.load(ground_truth_file_object)
     ground_truth_data = pd.read_csv(test_annotation_file)
+    ground_truth_data['utterance'] = ground_truth_data['utterance'].apply(eval)
 
     # test_dict = {item: test_data[item][0] for item in test_data}
     # ground_truth_dict = {item: test_data[item][0] for item in ground_truth_data}
