@@ -85,7 +85,7 @@ def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwarg
     print('Data Merged')
     chn = merged['language']=='chinese'
     merged.loc[chn, 'generation'] = merged[chn]['generation'].apply(add_space)
-    merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
+    # merged.loc[chn, 'utterance'] = merged[chn]['utterance'].apply(lambda x: [add_space(sent) for sent in eval(x)])
     print('jieba done')
     bleu_score = metrics['bleu'].compute(predictions=merged['generation'],references=merged['utterance'])
     print('bleu_score done')
